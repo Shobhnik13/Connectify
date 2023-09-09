@@ -27,7 +27,7 @@ export default function RootLayout({
       <body className={`${inter.className}`}>
         <Topbar/>
 
-        <main>
+        <main className='flex flex-row'>
           <Leftsidebar/>
           <section className='main-container'>
             <div className='w-full max-w-4xl'>
@@ -37,7 +37,9 @@ export default function RootLayout({
           <Rightsidebar/>
         </main>
 
+    <div className='block md:hidden'>
         <Bottombar/>
+    </div>
         </body>
     </html>
     </ClerkProvider>

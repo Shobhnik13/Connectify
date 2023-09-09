@@ -1,5 +1,6 @@
 import { ClerkProvider } from '@clerk/nextjs'
- 
+import "../globals.css"
+
 export const metadata = {
   title: 'Connectify',
 }
@@ -12,7 +13,7 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className='flex justify-center items-center h-full mt-24'>{children}</body>
+        <body className='bg-dark-1'>{children}</body>
       </html>
       </ClerkProvider>
   )

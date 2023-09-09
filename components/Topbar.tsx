@@ -1,8 +1,11 @@
+'use client'
 import { OrganizationSwitcher, SignOutButton, SignedIn } from "@clerk/nextjs"
 import Image from "next/image"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 const Topbar = () => {
+    const router=useRouter()
   return (
     <nav className="topbar">
         <Link href={'/'}>
@@ -18,7 +21,7 @@ const Topbar = () => {
                 {/* if we wrap a component x around signedin then x will only be renderd when user session is active  */}
                 {/* no need to fecth user  */}
                 <SignedIn>
-                    <SignOutButton>
+                    <SignOutButton signOutCallback={()=>router.push('/sign-in')}>
                         <div className="flex cursor-pointer ">
                             <Image src={'/assets/logout.svg'} alt="logout" width={24} height={24}/>
                         </div>
