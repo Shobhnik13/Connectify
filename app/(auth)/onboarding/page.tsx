@@ -5,7 +5,7 @@ import { currentUser } from "@clerk/nextjs"
 const OnboardingPage = async() => {
     // current user will give a user object in this server component 
     const user=await currentUser()
-    //database
+    //database when we will be signing by normal methhod
     const userInfo={}
     const userData={
         id:user?.id,
