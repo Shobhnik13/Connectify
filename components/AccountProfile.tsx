@@ -10,6 +10,8 @@ import { Button } from "./ui/button"
 import Image from "next/image"
 import { Textarea } from "./ui/textarea"
 import { ChangeEvent, useState } from "react"
+import { isBase64Image } from "@/lib/utils"
+import { useUploadThing } from '@/lib/uploadthing'
 interface props{
     user:{
         id:string,
@@ -22,6 +24,8 @@ interface props{
     btnTitle:string,
 }
 const AccountProfile = ({user,btnTitle}:props) => {
+
+  const {startUpload}=useUploadThing('media')
   const [files,setFiles]=useState<File[]>([])
   // defining form 
   const form = useForm<z.infer<typeof userValidation>>({
@@ -62,10 +66,28 @@ const AccountProfile = ({user,btnTitle}:props) => {
         fileReader.readAsDataURL(file)
       }
   }
-  function onSubmit(values: z.infer<typeof userValidation>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values)
+  const onSubmit=async(values: z.infer<typeof userValidation>) =>{
+    // value from an image we get is called a blob 
+    //the initial value would be a google image url
+    const blob=values.profile_photo
+    // this func wil tell whether the image is changed or not,it will take the val of img ie blob as parameter and tell that is image changed 
+    const hasImageChanged=isBase64Image(blob)
+    //as when we initially come the photo ould be a google image
+    //so we chaneg the image 
+    // so this func will tell the image is changed or not 
+    //so when hasimagechanged would be true it means image is changed from initial
+    //so we need to update the image by uploading it 
+    //we will use upload thing 
+    if(hasImageChanged){
+      //uploading 
+      const imgRes=await startUpload(files)
+      //if uploaded success
+      //then img res would be existing
+      if(imgRes && imgRes[0].fileUrl){
+        //now setting the values.profile_photo with imgres[0].fileurl which comes on succeed startupload
+        values.profile_photo=imgRes[0].fileUrl
+      }
+    }
   }
 
   return (
