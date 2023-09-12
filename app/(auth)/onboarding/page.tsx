@@ -26,5 +26,6 @@ const OnboardingPage = async() => {
     </main>
   )
 }
+ 
 
 export default OnboardingPage
