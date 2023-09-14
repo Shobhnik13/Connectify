@@ -1,12 +1,22 @@
 'use server'
+// this 'use server' will allow us to run a specific code to server only 
 
 import { revalidatePath } from "next/cache"
 import User from "../models/user.model"
 import { connectionToDb } from "../mongoose"
 
-// this 'use server' will allow us to run a specific code to server only 
+interface props{
+    userId:string,
+    username:string,
+    name:string,
+    bio:string,
+    image:string,
+    path:string,
+}
 
-export async function updateUser(userId:string,username:string,name:string,bio:string,image:string,path:string):Promise<void> {
+
+
+export async function updateUser({name,username,path,image,bio,userId}:props):Promise<void> {
     //connectuing to db
     connectionToDb()
 
@@ -36,5 +46,13 @@ export async function updateUser(userId:string,username:string,name:string,bio:s
         }
     }catch(error:any){
         throw new Error(`Failed to Update/Create user: ${error.message}`)
+    }
+}
+
+export async function fetchUser(userId:string){
+    try{
+        connectionToDb()
+    }catch(error:any){
+
     }
 }
