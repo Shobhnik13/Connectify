@@ -15,12 +15,14 @@ interface props{
 }
 
 
-
+//update user function used in profile page
 export async function updateUser({name,username,path,image,bio,userId}:props):Promise<void> {
     //connectuing to db
     connectionToDb()
 
     try{
+        //finding user by userId 
+        //then updating the parameters that coming from props which is coming from AccountForm page
         await User.findOneAndUpdate(
         {
             id:userId
@@ -49,10 +51,24 @@ export async function updateUser({name,username,path,image,bio,userId}:props):Pr
     }
 }
 
-export async function fetchUser(userId:string){
-    try{
-        connectionToDb()
-    }catch(error:any){
 
+//fetch user used in crete post
+export async function fetchUser(userId:string){
+    connectionToDb()
+    try{
+        // finding user by using user id
+        // as findOne will help to retrive only a single document that belongs to the passed criteria
+        //id:userId
+         return await User
+         .findOne({id:userId})
+        // populate('communities') tells Mongoose to replace the communities field in the User model 
+        // with the actual ref (that is defined in User model communities section) ie->'Community' document from the Community collection.  
+        // .populate({
+        //     path:'communities',
+        //     model:Community,    
+        // })
+
+    }catch(error:any){
+        throw new Error(`Failed to fetch user!:${error.message}`)
     }
 }
