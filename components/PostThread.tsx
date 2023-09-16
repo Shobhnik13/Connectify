@@ -11,6 +11,7 @@ import { Textarea } from "./ui/textarea"
 import { ChangeEvent, useState } from "react"
 import { usePathname, useRouter } from "next/navigation"
 import { postValidation } from "@/lib/validation/post"
+import { createPost } from "@/lib/actions/post.actions"
 
 // interface Props{
 //     userId:string
@@ -26,8 +27,48 @@ const PostThread = ({userId}:{userId:string}) => {
      accountId:userId,
     },
   })
+  //on submit
+  const onSubmit=async(values: z.infer<typeof postValidation>) =>{
+      await createPost({
+        text:values.post,
+        author:userId,
+        communityId:null,
+        path:pathname,
+      })
+      //after success 
+      router.push('/')
+  }
   return (
-   <p>post thread</p>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="mt-10 flex flex-col justify-start gap-10">
+        
+        {/* post  */}
+        <FormField
+          control={form.control}
+          name="post"
+          render={({ field }) => (
+            // this FormItem wil contain formlable and a formcontrol(input) which will be in row
+            <FormItem className="flex flex-col justify-center gap-3 w-full">
+              {/* FormLabel */}
+              <FormLabel className="text-base-semibold text-light-2">
+                Content
+              </FormLabel>
+              
+             {/* formcontrol */}
+              <FormControl className="nofocus">
+                <Textarea
+                rows={15}
+                placeholder="Hola amigo!"
+                className="account-form_input no-focus"
+                {...field}
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+      <Button type="submit" className='font-semibold bg-gradient-to-r from-indigo-700 via-indigo-500 to-indigo-300'>Post</Button>
+      </form>
+    </Form>
   )
   }
 export default PostThread

@@ -15,11 +15,13 @@ const userSchema=new mongoose.Schema({
     },
     image:{type:String},
     bio:{type:String},
-    //posts will be an array of obj coz a user can have multiple posts
+    //this means a user(model) can have multiple post(Post->model {type:,ref}) as posts
     posts:[
+        //array whose elements are ids
+        //just like array of integers
+        //this is array of object ids of Post
+        //Posts:[id1,id2,id3,......]
         {
-            //this means that a user can have multiple posts on th same user id/objectid
-            //so thats why type is mongoose.schema.types.objectid
             type:mongoose.Schema.Types.ObjectId,
             ref:'Post'
         }
