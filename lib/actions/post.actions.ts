@@ -73,6 +73,8 @@ export async function fetchPosts(pageNumber=1,pageSize=20){
                 model:'User',
                 select:'_id name parentId image'
             }})
+
+
             //total posts without parents
             //same way as calculating postquery
             //this will be used in pagination
@@ -83,7 +85,7 @@ export async function fetchPosts(pageNumber=1,pageSize=20){
             //if the total post count would be > skipcount + post that are executed
             //ex- we have 45 posts in totalPosts
             //20 are executed on page-1 and those 20 are skipped
-            //so total>20+20
+            //so total>20
             //means we are having more post than the posts that would be skipped + posts that are executed 
             const isNext=totalPosts > skipCount + posts.length
             //if isnext exist return a obj of isnext and the posts that needs to be executed in the next page
