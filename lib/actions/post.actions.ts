@@ -95,3 +95,38 @@ export async function fetchPosts(pageNumber=1,pageSize=20){
     }
 
 }
+
+//ftech post by id
+export async function fetchPostById(id:string){
+    connectionToDb()
+    try{
+        const postQuery = await Post.findById(id)
+        .populate({
+            path:'author',
+            model:'User',
+            select:'_id name image id'
+        })
+        .populate({
+            path:'children',
+            populate:[
+                {
+                    path:'author',
+                    model:'User',
+                    select:'_id name image id parentId'
+                },
+                {
+                    path:'children',
+                    model:'Post',
+                    populate:{
+                        path:'author',
+                        model:'User',
+                        select:'_id id name image parentId'
+                    }
+                }
+            ]
+        }).exec()
+        return postQuery
+    }catch(error:any){
+        throw new Error(`Error fetching post: ${error.message}`)
+    }
+}
