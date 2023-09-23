@@ -1,3 +1,4 @@
+import Comment from "@/components/Comment"
 import PostCard from "@/components/PostCard"
 import { fetchPostById } from "@/lib/actions/post.actions"
 import { fetchUser } from "@/lib/actions/user.actions"
@@ -27,6 +28,14 @@ const page = async({params}:{params:{id:string}}) => {
           createdAt={item.createdAt}
           comments={item.children}
           />
+          {/* comment sectipn  */}
+          <div className="mt-7">
+            <Comment
+            postId={item.id}
+            currentUserImg={user.imageUrl}
+            currentUserId={JSON.stringify(userInfo._id)}
+            />
+          </div>
         </div>
     </section>
   )

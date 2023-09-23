@@ -1,8 +1,8 @@
 'use server'
-import { revalidatePath } from "next/cache"
-// if we noy use this 'use server' then we will get an error coz we can NOT directly create databases or apis
+// if we not use this 'use server' then we will get an error coz we can NOT directly create databases or apis
 //in the browser which is also called as CORS
 //to prevernt CORS we use this 
+import { revalidatePath } from "next/cache"
 import Post from "../models/post.model"
 import User from "../models/user.model"
 import { connectionToDb } from "../mongoose"
@@ -12,6 +12,10 @@ import { connectionToDb } from "../mongoose"
         author:string,
         communityId:string | null,
         path:string,
+}
+
+interface params2{
+    
 }
 // create post in postThread
 export async function createPost({text,author,communityId,path}:params){
@@ -124,9 +128,50 @@ export async function fetchPostById(id:string){
                     }
                 }
             ]
-        }).exec()
+        }).exec()            
         return postQuery
     }catch(error:any){
         throw new Error(`Error fetching post: ${error.message}`)
+    }
+}
+
+// add comments to post
+export async function addCommentToPost(
+    postId:string,
+    commentText:string,
+    userId:string,
+    path:string,
+){
+    connectionToDb()
+    try{
+        //first fetch the post by postId
+        //coz we will be commenting under this post
+        const post=await Post.findById(postId)
+        //if post doesnt exist return the error
+        if(!post){
+            throw new Error('Post not found!')
+        }
+        //now if post does exist
+        //then create a new post with comment text
+        const commentPost=new Post({
+            text:commentText,
+            author:userId,
+            parentId:postId
+        })
+
+    //saving it
+        const savedPost=await commentPost.save()
+
+        //now after creating the comment post
+        //we need to update the post under which we will be posting this comment
+        // i.e the post we fetched in the beginning 
+        //so pushing this comment post in original post (post) in children array
+        post.children.push(savedPost._id)
+        //now saving the original thread(post)
+        await post.save()
+        //revalidating path to make immediate changes to the path 
+        revalidatePath(path)
+    }catch(error:any){
+        throw new Error(`Failed to post comment :${error.message}`)
     }
 }
