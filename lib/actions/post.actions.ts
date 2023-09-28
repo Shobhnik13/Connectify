@@ -153,10 +153,10 @@ export async function addCommentToPost(
         }
         //now if post does exist
         //then create a new post with comment text
-        const commentPost=new Post({
+        const commentPost=await new Post({
             text:commentText,
             author:userId,
-            parentId:postId
+            parentId:postId,
         })
 
     //saving it

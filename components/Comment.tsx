@@ -62,3 +62,12 @@ const Comment = ({postId,currentUserImg,currentUserId}:Props) => {
 }
 
 export default Comment
+
+
+
+
+//what is difference bw post.create(await use then await save working) and new post(no await use and then await save working) when its promise so we can use 
+//await post.create([bla bla])-> await save yes
+//post.create({bla bla})-> no await save (error)
+//await new post({bla bla}) -> awai save yes
+//new post({bla bla})-> await save yes
