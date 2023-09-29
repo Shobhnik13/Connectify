@@ -8,6 +8,7 @@ import Link from 'next/link'
 
 export default async function Home() {
   const user=await currentUser()
+  if(!user) return null;
   const res=await fetchPosts(1,30);
   // console.log(res)
   return (

@@ -13,10 +13,12 @@ import { usePathname, useRouter } from "next/navigation"
 import { postValidation } from "@/lib/validation/post"
 import { createPost } from "@/lib/actions/post.actions"
 
-// interface Props{
-//     userId:string
-// }
-const PostThread = ({userId}:{userId:string}) => {
+interface Props{
+    userId:string
+}
+
+
+const PostThread = ({userId}:Props) => {
   const router=useRouter()
   const pathname=usePathname()
   // defining form 

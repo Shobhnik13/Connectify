@@ -27,11 +27,18 @@ const Comment = ({postId,currentUserImg,currentUserId}:Props) => {
       },
     })
     //on submit
-    const onSubmit=async(values: z.infer<typeof commentValidation>) =>{
-        await addCommentToPost(postId,values.post,JSON.parse(currentUserId),pathname)
-        //after success 
-        form.reset()
-    }
+    const onSubmit = async (values: z.infer<typeof commentValidation>) => {
+      await addCommentToPost(
+        postId,
+        values.post,
+        JSON.parse(currentUserId),
+        pathname
+      );
+        // console.log('yes')
+      // form.reset();
+      router.push('/')
+    };
+
   return (
     <Form {...form}>
     <form onSubmit={form.handleSubmit(onSubmit)} className="comment-form">

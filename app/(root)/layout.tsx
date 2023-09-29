@@ -8,7 +8,7 @@ import Leftsidebar from '../../components/Leftsidebar'
 import Rightsidebar from '../../components/Rightsidebar'
 import { ClerkProvider } from '@clerk/nextjs'
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: 'Connectify',

@@ -1,44 +1,69 @@
-import Comment from "@/components/Comment"
-import PostCard from "@/components/PostCard"
-import { fetchPostById } from "@/lib/actions/post.actions"
-import { fetchUser } from "@/lib/actions/user.actions"
-import { currentUser } from "@clerk/nextjs"
-import { redirect } from "next/navigation"
+import { redirect } from "next/navigation";
+import { currentUser } from "@clerk/nextjs";
 
-const page = async({params}:{params:{id:string}}) => {
-    //if no id then return null
-    if(!params.id)return null
-    //user
-    const user=await currentUser()
-    if(!user)return null;
-    const userInfo=await fetchUser(user.id) 
-    if(!userInfo.onboarded) redirect('/onboarding')
-    const item=await fetchPostById(params.id)
-  return ( 
-    <section className="relative">
-        <div>
+import Comment from "@/components/Comment";
+import { fetchUser } from "@/lib/actions/user.actions";
+
+import { fetchPostById } from "@/lib/actions/post.actions";
+import PostCard from "@/components/PostCard";
+
+export const revalidate = 0;
+
+async function page({ params }: { params: { id: string } }) {
+  if (!params.id) return null;
+
+  const user = await currentUser();
+  if (!user) return null;
+
+  const userInfo = await fetchUser(user.id);
+  if (!userInfo?.onboarded) redirect("/onboarding");
+
+  const thread = await fetchPostById(params.id);
+
+  return (
+    <section className='relative'>
+        {/* 1-> that post  */}
+      <div>
         <PostCard
-          key={item._id}
-          id={item._id}
-          currentUserId={user?.id || ""}
-          parentId={item.parentId}
-          content={item.text}
-          author={item.author}
-          community={item.community}
-          createdAt={item.createdAt}
-          comments={item.children}
+          id={thread._id}
+          currentUserId={user.id}
+          parentId={thread.parentId}
+          content={thread.text}
+          author={thread.author}
+          community={thread.community}
+          createdAt={thread.createdAt}
+          comments={thread.children}
+        />
+      </div>
+
+    {/* 2-> comment option  */}
+      <div className='mt-7'>
+        <Comment
+          postId={params.id}
+          currentUserImg={user.imageUrl}
+          currentUserId={JSON.stringify(userInfo._id)}
+        />
+      </div>
+    {/* 3-> mapping of comments */}
+
+      {/* <div className='mt-10'>
+        {thread.children.map((childItem: any) => (
+          <PostCard
+            key={childItem._id}
+            id={childItem._id}
+            currentUserId={user.id}
+            parentId={childItem.parentId}
+            content={childItem.text}
+            author={childItem.author}
+            community={childItem.community}
+            createdAt={childItem.createdAt}
+            comments={childItem.children}
+            isComment
           />
-          {/* comment sectipn  */}
-          <div className="mt-7">
-            <Comment
-            postId={item.id}
-            currentUserImg={user.imageUrl}
-            currentUserId={JSON.stringify(userInfo._id)}
-            />
-          </div>
-        </div>
+        ))}
+      </div> */}
     </section>
-  )
+  );
 }
 
-export default page
+export default page;

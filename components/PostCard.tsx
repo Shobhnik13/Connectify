@@ -64,7 +64,7 @@ const PostCard = ({id,currentUserId,parentId,content,author,community,createdAt,
                         </div>
                         {/* comments div start  */}
                        {isComment && comments.length>0 && (
-                        <Link href={`/post/${id}`}>
+                        <Link href={`/post/${id}`} prefetch={false}>
                             <p className="mt-1 text-subtle-medium text-gray-1">{comments.length} replies</p>
                         </Link>
                         )}

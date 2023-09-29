@@ -137,41 +137,40 @@ export async function fetchPostById(id:string){
 
 // add comments to post
 export async function addCommentToPost(
-    postId:string,
-    commentText:string,
-    userId:string,
-    path:string,
-){
-    connectionToDb()
-    try{
-        //first fetch the post by postId
-        //coz we will be commenting under this post
-        const post=await Post.findById(postId)
-        //if post doesnt exist return the error
-        if(!post){
-            throw new Error('Post not found!')
-        }
-        //now if post does exist
-        //then create a new post with comment text
-        const commentPost=await new Post({
-            text:commentText,
-            author:userId,
-            parentId:postId,
-        })
-
-    //saving it
-        const savedPost=await commentPost.save()
-
-        //now after creating the comment post
-        //we need to update the post under which we will be posting this comment
-        // i.e the post we fetched in the beginning 
-        //so pushing this comment post in original post (post) in children array
-        post.children.push(savedPost._id)
-        //now saving the original thread(post)
-        await post.save()
-        //revalidating path to make immediate changes to the path 
-        revalidatePath(path)
-    }catch(error:any){
-        throw new Error(`Failed to post comment :${error.message}`)
+    threadId: string,
+    commentText: string,
+    userId: string,
+    path: string
+  ) {
+    connectionToDb();
+  
+    try {
+      // Find the original thread by its ID
+      const originalThread = await Post.findById(threadId);
+  
+      if (!originalThread) {
+        throw new Error("Thread not found");
+      }
+  
+      // Create the new comment thread
+      const commentThread = new Post({
+        text: commentText,
+        author: userId,
+        parentId: threadId, // Set the parentId to the original thread's ID
+      });
+  
+      // Save the comment thread to the database
+      const savedCommentThread = await commentThread.save();
+  
+      // Add the comment thread's ID to the original thread's children array
+      originalThread.children.push(savedCommentThread._id);
+  
+      // Save the updated original thread to the database
+      await originalThread.save();
+  
+      revalidatePath(path);
+    } catch (err) {
+      console.error("Error while adding comment:", err);
+      throw new Error("Unable to add comment");
     }
-}
+  }
