@@ -1,5 +1,6 @@
+import PostTab from "@/components/PostTab";
 import ProfileHeader from "@/components/ProfileHeader";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { profileTabs } from "@/constants";
 import { fetchUser } from "@/lib/actions/user.actions";
 import { currentUser } from "@clerk/nextjs"
@@ -45,6 +46,15 @@ const page = async({params}:{params:{id:string}}) => {
                 </TabsTrigger>
             ))}
           </TabsList>
+          {profileTabs.map((item)=>(
+            <TabsContent key={`content-${item.label}`} value={item.value} className="w-full text-light-1">
+                <PostTab
+                currentUserId={user.id}
+                accountId={userInfo.id}
+                accountType='USER'
+                />
+            </TabsContent>
+          ))}
         </Tabs>
     </div>
   </section>

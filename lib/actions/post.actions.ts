@@ -14,9 +14,6 @@ import { connectionToDb } from "../mongoose"
         path:string,
 }
 
-interface params2{
-    
-}
 // create post in postThread
 export async function createPost({text,author,communityId,path}:params){
     connectionToDb()
@@ -70,11 +67,11 @@ export async function fetchPosts(pageNumber=1,pageSize=20){
         .sort({createdAt:"desc"})
         .skip(skipCount)
         .limit(pageSize)
-        .populate({path:'author',model:'User'})
+        .populate({path:'author',model:User})
         .populate({path:'children',
             populate:{
                 path:'author',
-                model:'User',
+                model:User,
                 select:'_id name parentId image'
             }})
 
@@ -107,7 +104,7 @@ export async function fetchPostById(id:string){
         const postQuery = await Post.findById(id)
         .populate({
             path:'author',
-            model:'User',
+            model:User,
             select:'_id name image id'
         })
         .populate({
@@ -115,15 +112,15 @@ export async function fetchPostById(id:string){
             populate:[
                 {
                     path:'author',
-                    model:'User',
+                    model:User,
                     select:'_id name image id parentId'
                 },
                 {
                     path:'children',
-                    model:'Post',
+                    model:Post,
                     populate:{
                         path:'author',
-                        model:'User',
+                        model:User,
                         select:'_id id name image parentId'
                     }
                 }
@@ -169,8 +166,33 @@ export async function addCommentToPost(
       await originalThread.save();
   
       revalidatePath(path);
-    } catch (err) {
-      console.error("Error while adding comment:", err);
-      throw new Error("Unable to add comment");
+    } catch (err:any) {
+    //   console.error(`Error while adding comment:${error.message}`, );
+      throw new Error(`Error while adding comment:${err.message}`);
+    }
+  }
+
+  //fetch user post that will show up on profile
+  export async function fetchUserPost(userId:string){
+    connectionToDb()
+    try{
+        //find the posts that are associated with the user id
+        const posts=await User.findOne({id:userId})
+        .populate({
+            path:'posts',
+            model:Post,
+            populate:{
+                path:'children',
+                model:Post,
+                populate:{
+                    path:'author',
+                    model:User,
+                    select:'id name image'
+                }
+            }
+        })
+        return posts
+    }catch(error:any){
+        throw new Error(`Error while fetching user posts:${error.message}`)
     }
   }
