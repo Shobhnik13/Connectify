@@ -4,6 +4,8 @@
 import { revalidatePath } from "next/cache"
 import User from "../models/user.model"
 import { connectionToDb } from "../mongoose"
+import { SortOrder } from "mongoose"
+import { FilterQuery } from "mongoose"
 
 interface props{
     userId:string,
@@ -15,7 +17,7 @@ interface props{
 }
 
 
-//update user function used in profile page
+//update user function used in AccountProfile component of onboarding page
 export async function updateUser({name,username,path,image,bio,userId}:props):Promise<void> {
     //connectuing to db
     connectionToDb()
@@ -52,7 +54,9 @@ export async function updateUser({name,username,path,image,bio,userId}:props):Pr
 }
 
 
-//fetch user used in crete post
+//fetch user used in create post so that we can pass this user to a comp in create post page 
+//which will be further used to update the post array of this user
+
 export async function fetchUser(userId:string){
     connectionToDb()
     try{
@@ -70,5 +74,67 @@ export async function fetchUser(userId:string){
 
     }catch(error:any){
         throw new Error(`Failed to fetch user!:${error.message}`)
+    }
+}
+
+
+// fetch all users that will be used in search page 
+export async function fetchAllUsers({
+    userId,
+    pageNo=1,
+    pageSize=20,
+    searchString = "",
+    sortBy="desc",
+}:{
+   userId?:string,
+   pageNo?:number,
+   pageSize?:number,
+   searchString?:string,
+   sortBy?:SortOrder, 
+}){
+    connectionToDb()
+    try{
+        //skip amount same as when we were fetching the posts on home page
+        //so we would be implementing same pagination loic here too
+        //for users on search page
+        const skipCount=(pageNo-1)*pageSize
+
+        //creating a regEx to convert the coming searchString as a case in-sesitive
+        //so when if ex-> my id is abcd@123
+        //but user searches AbcD@123 so this would directly
+        //be converted to abcd@123 by using regex
+        //regex=new RegExp(searchString,'i')
+        //the above syntax means that searchString would be converted
+        // to regular expression which is case in sensitive (i.e i)
+        //regex=new RegExp(searchString,'i')
+        const regex=new RegExp(searchString,'i')
+        //query means
+        //find a query/user
+        // in which id is not equal(ne) to the userId
+        // thats why { id:{ $ne:userId } }
+        const query: FilterQuery<typeof User>={
+            id:{$ne:userId}
+        }
+        //now check that if the searchString do exist or not
+        //searchstring.trim()!=='' means search string is not exmpty
+        if(searchString.trim()!==''){
+            query.$or=[
+                { username:{$regex:regex} },
+                { name :{$regex:regex} }
+            ]
+        }
+        const sortOptions={createdAt:sortBy}
+        const usersQuery=User.find(query)
+        .sort(sortOptions)
+        .limit(pageSize)
+        .skip(skipCount)
+
+        const totalUserCount=await User.countDocuments(query)
+        //time to execute the userQuery
+        const users=await usersQuery.exec() 
+        const isNext=totalUserCount > skipCount + users.length
+        return {isNext,users}
+    }catch(error:any){
+        throw new Error(`Error fetching users : ${error.message}`)
     }
 }

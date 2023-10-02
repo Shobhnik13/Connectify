@@ -8,7 +8,7 @@ import { useRouter,usePathname } from 'next/navigation'
 const Leftsidebar = () => {
   const pathname=usePathname()
   const router=useRouter()
-  const {userId}=useAuth()
+  const { userId } =useAuth()
   return (
     // contains 2 div up for links and down for logout 
     <section className="custom-scrollbar leftsidebar">
