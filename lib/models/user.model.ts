@@ -21,6 +21,7 @@ const userSchema=new mongoose.Schema({
         //just like array of integers
         //this is array of object ids of Post
         //Posts:[id1,id2,id3,......]
+        
         {
             type:mongoose.Schema.Types.ObjectId,
             ref:'Post'
